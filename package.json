@@ -4,6 +4,7 @@
   "description": "WebGL recreation of aa cel-shaded trefoil demo",
   "main": "webpack.config.js",
   "scripts": {
+    "start:dev": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
