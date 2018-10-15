@@ -38,37 +38,32 @@ function init() {
   window.addEventListener("resize", e=>Util.resize(gl, canvas, aspectRatio));
 
 
-  CreateVertexBuffer();
+  buildVertexBuffer();
 
 
   update();
 }
 
-function CreateVertexBuffer() {
-  // 3 floats pos, 3 floats normal
+function buildVertexBuffer() {
+  // 6 floats per vert (3 pos + 3 normal)
   const verts = new Float32Array(VertexCount * 6);
 
-  let currentVert = 0;
   // Small delta for calculating normals
   const E = 0.01;
+  // Distance between each slice and stack
   const ds = 1.0 / Slices;
   const dt = 1.0 / Stacks;
 
   // Normal vector of the current vert
   const n = vec3.create();
 
-  // The upper bounds in these loops are tweaked to reduce the
-  // chance of precision error causing an incorrect # of iterations.
-
-  for (let s = 0; s < 1 - ds / 2; s += ds)
-  {
-    for (let t = 0; t < 1 - dt / 2; t += dt)
-    {
+  for (let s = 0; s < Slices; s++) {
+    for (let t = 0; t < Stacks; t++) {
       // Position of the current vert
-      const p = evalTrefoil(s, t);
+      const p = evalTrefoil(s*ds, t*dt);
       // Positions slightly offset in x and y dirs
-      const u = evalTrefoil(s + E, t);
-      const v = evalTrefoil(s, t + E);
+      const u = evalTrefoil(s*ds + E, t*dt);
+      const v = evalTrefoil(s*ds, t*dt + E);
       // Just the difference from the position
       vec3.sub(u, u, p);
       vec3.sub(v, v, p);
@@ -76,13 +71,10 @@ function CreateVertexBuffer() {
       vec3.cross(n, u, v);
       vec3.normalize(n, n);
 
-      verts.set([...p, ...n], currentVert*6);
-      currentVert++;
+      // (s*Stacks + t) is the current vertex
+      // 6 is amount of floats per vert (3 pos + 3 norm)
+      verts.set([...p, ...n], (s*Stacks + t)*6);
     }
-  }
-
-  if(currentVert !== VertexCount) {
-    console.error("Tessellation error");
   }
 
   const vertexBuffer = gl.createBuffer();
