@@ -9,6 +9,8 @@ const aspectRatio = 16/9;
 const Slices = 16;
 const Stacks = 4;
 const VertexCount = Slices * Stacks;
+const IndexCount = VertexCount * 6;
+
 
 function draw() {
   gl.clearColor(0.7, 0.7, 0.7, 1.0); // Clear background with light grey color
@@ -26,23 +28,6 @@ function update() {
   window.requestAnimationFrame(update);
 }
 
-function init() {
-  const isWebGL2 = !!gl;
-  if(!isWebGL2) {
-    document.querySelector('body').style.backgroundColor = 'red';
-    console.error("Unable to create webgl2 context");
-    return;
-  }
-
-  Util.resize(gl, canvas, aspectRatio);
-  window.addEventListener("resize", e=>Util.resize(gl, canvas, aspectRatio));
-
-
-  buildVertexBuffer();
-
-
-  update();
-}
 
 function buildVertexBuffer() {
   // 6 floats per vert (3 pos + 3 normal)
@@ -122,5 +107,46 @@ const evalTrefoil = (() => {
   }
 })();
 
+
+function buildIndexBuffer() {
+  const indices = new Uint16Array(IndexCount);
+  let currIx = 0;
+
+  for (let i = 0; i < Slices * Stacks; i += Stacks) {
+    for (let j = 0; j < Stacks; j++) {
+      indices[currIx++] = i + j;
+      indices[currIx++] = i + ((j + 1) % Stacks);
+      indices[currIx++] = (i + j + Stacks) % VertexCount;
+
+      indices[currIx++] = (i + j + Stacks) % VertexCount;
+      indices[currIx++] = i + ((j + 1) % Stacks);
+      indices[currIx++] = (i + ((j + 1) % Stacks) + Stacks) % VertexCount;
+    }
+  }
+
+  const indexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+  return indexBuffer;
+}
+
+function init() {
+  const isWebGL2 = !!gl;
+  if(!isWebGL2) {
+    document.querySelector('body').style.backgroundColor = 'red';
+    console.error("Unable to create webgl2 context");
+    return;
+  }
+
+  Util.resize(gl, canvas, aspectRatio);
+  window.addEventListener("resize", e=>Util.resize(gl, canvas, aspectRatio));
+
+  buildVertexBuffer();
+  buildIndexBuffer();
+
+
+  update();
+}
 
 init();
