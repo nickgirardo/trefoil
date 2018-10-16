@@ -1,7 +1,7 @@
 import * as Util from "./engine/util.js";
 import { vec3, vec4, mat3, mat4 } from "./engine/gl-matrix.js";
 
-import * as fragSrc from "../assets/shaders/basic.frag";
+import * as fragSrc from "../assets/shaders/toon.frag";
 import * as vertSrc from "../assets/shaders/basic.vert";
 
 const canvas = document.querySelector('canvas');
@@ -36,7 +36,7 @@ function draw() {
   gl.uniform3f(programInfo.locations.uniform.diffuseMaterial, 0, 0.75, 0.75);
   gl.uniform3f(programInfo.locations.uniform.ambientMaterial, 0.04, 0.04, 0.04);
   gl.uniform3f(programInfo.locations.uniform.specularMaterial, 0.5, 0.5, 0.5);
-  gl.uniform1f(programInfo.locations.uniform.shininess, 50);
+  gl.uniform1f(programInfo.locations.uniform.shininess, 80);
 
   gl.uniform3f(programInfo.locations.uniform.lightPosition, 0.25, 0.25, 1);
 
@@ -58,7 +58,7 @@ function draw() {
 
 function update() {
   // TODO updating theta here
-  const updateRotation = 0.01;
+  const updateRotation = 0.015;
   theta += updateRotation;
 
   const rotation = mat4.create();
