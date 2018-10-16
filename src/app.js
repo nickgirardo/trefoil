@@ -145,7 +145,7 @@ const evalTrefoil = (() => {
     vec3.normalize(q, dv);
     // qvn is the vector normal of q
     vec3.set(qvn, q[1], -q[0], 0);
-    vec3.normalize(qvn, q);
+    vec3.normalize(qvn, qvn);
     vec3.cross(ww, q, qvn);
 
     const range = vec3.create();
