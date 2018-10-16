@@ -1,28 +1,78 @@
 import * as Util from "./engine/util.js";
-import { vec3 } from "./engine/gl-matrix.js";
+import { vec3, vec4, mat3, mat4 } from "./engine/gl-matrix.js";
+
+import * as fragSrc from "../assets/shaders/basic.frag";
+import * as vertSrc from "../assets/shaders/basic.vert";
 
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl2', { antialias: false });
 
 const aspectRatio = 16/9;
 
-const Slices = 16;
-const Stacks = 4;
+const Slices = 256;
+const Stacks = 64;
 const VertexCount = Slices * Stacks;
 const IndexCount = VertexCount * 6;
 
+let theta = 0;
+
+let vertexBuffer;
+let indexBuffer;
+let programInfo;
+
+let projection = mat4.create();
+let modelView = mat4.create();
+let normalMatrix = mat3.create();
 
 function draw() {
   gl.clearColor(0.7, 0.7, 0.7, 1.0); // Clear background with light grey color
   gl.clearDepth(1.0); // Clear the depth buffer
-  gl.enable(gl.DEPTH_TEST); // Enable depth testing, insures correct ordering
-  gl.depthFunc(gl.LEQUAL); // Near obscures far
 
   // Clear canvas
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  gl.useProgram(programInfo.program);
+
+  gl.uniform3f(programInfo.locations.uniform.diffuseMaterial, 0, 0.75, 0.75);
+  gl.uniform3f(programInfo.locations.uniform.ambientMaterial, 0.04, 0.04, 0.04);
+  gl.uniform3f(programInfo.locations.uniform.specularMaterial, 0.5, 0.5, 0.5);
+  gl.uniform1f(programInfo.locations.uniform.shininess, 50);
+
+  gl.uniform3f(programInfo.locations.uniform.lightPosition, 0.25, 0.25, 1);
+
+  gl.uniformMatrix4fv(programInfo.locations.uniform.projection, false, projection);
+  gl.uniformMatrix4fv(programInfo.locations.uniform.modelView, false, modelView);
+  gl.uniformMatrix3fv(programInfo.locations.uniform.normalMatrix, false, normalMatrix);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+  gl.enableVertexAttribArray(programInfo.locations.attribute.position);
+  gl.vertexAttribPointer(programInfo.locations.attribute.position, 3, gl.FLOAT, false, 6*4, 0);
+
+  gl.enableVertexAttribArray(programInfo.locations.attribute.normal);
+  gl.vertexAttribPointer(programInfo.locations.attribute.normal, 3, gl.FLOAT, false, 6*4, 3*4);
+
+  gl.drawElements(gl.TRIANGLES, IndexCount, gl.UNSIGNED_SHORT, 0);
 }
 
 function update() {
+  // TODO updating theta here
+  const updateRotation = 0.01;
+  theta += updateRotation;
+
+  const rotation = mat4.create();
+  mat4.fromRotation(rotation, theta, [0, 1, 0]);
+  const translation = mat4.create();
+  mat4.fromTranslation(translation, [0, 0, -7]);
+
+  mat4.multiply(modelView, translation, rotation);
+  mat3.fromMat4(normalMatrix, modelView);
+
+  const S = 0.80;
+  const H = S * aspectRatio;
+  mat4.ortho(projection, -S, S, -H, H, 4, 10);
+
   draw();
 
   window.requestAnimationFrame(update);
@@ -131,6 +181,32 @@ function buildIndexBuffer() {
   return indexBuffer;
 }
 
+function initGL() {
+
+  vertexBuffer = buildVertexBuffer();
+  indexBuffer = buildIndexBuffer();
+
+  programInfo = Util.createProgram(gl, {vertex: vertSrc, fragment: fragSrc}, {
+    uniform: {
+      projection: "Projection",
+      modelView: "Modelview",
+      normalMatrix: "NormalMatrix",
+      lightPosition: "LightPosition",
+      ambientMaterial: "AmbientMaterial",
+      diffuseMaterial: "DiffuseMaterial",
+      specularMaterial: "SpecularMaterial",
+      shininess: "Shininess",
+    },
+    attribute: {
+      position: 'Position',
+      normal: 'Normal',
+    },
+  });
+
+  gl.enable(gl.DEPTH_TEST); // Enable depth testing, insures correct ordering
+  gl.depthFunc(gl.LEQUAL); // Near obscures far
+}
+
 function init() {
   const isWebGL2 = !!gl;
   if(!isWebGL2) {
@@ -139,12 +215,10 @@ function init() {
     return;
   }
 
+  initGL();
+
   Util.resize(gl, canvas, aspectRatio);
   window.addEventListener("resize", e=>Util.resize(gl, canvas, aspectRatio));
-
-  buildVertexBuffer();
-  buildIndexBuffer();
-
 
   update();
 }
