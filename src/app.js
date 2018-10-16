@@ -14,6 +14,7 @@ const Stacks = 64;
 const VertexCount = Slices * Stacks;
 const IndexCount = VertexCount * 6;
 
+// Rotation angle of trefoil, updated every frame
 let theta = 0;
 
 let vertexBuffer;
@@ -57,21 +58,27 @@ function draw() {
 }
 
 function update() {
-  // TODO updating theta here
   const updateRotation = 0.015;
   theta += updateRotation;
 
   const rotation = mat4.create();
   mat4.fromRotation(rotation, theta, [0, 1, 0]);
+  // TODO This is constant and doesn't need to be created every frame
   const translation = mat4.create();
   mat4.fromTranslation(translation, [0, 0, -7]);
 
   mat4.multiply(modelView, translation, rotation);
+
+  // As the modelView matrix is 'simple' (i.e. only translated and rotated)
+  // Taking the top 3x3 will serve as the normalMatrix
+  // As this is equivalent to the inverse transpose for simple matricies
   mat3.fromMat4(normalMatrix, modelView);
 
-  const S = 2.0;
-  const H = S / aspectRatio;
-  mat4.ortho(projection, -S, S, -H, H, 4, 10);
+  // The two vars are actual only half width and height
+  // Aspect ratio used to insure correct proportions
+  const viewWidth = 2.0;
+  const viewHeight = viewWidth / aspectRatio;
+  mat4.ortho(projection, -viewWidth, viewWidth, -viewHeight, viewHeight, 4, 10);
 
   draw();
 
@@ -90,25 +97,31 @@ function buildVertexBuffer() {
   const dt = 1.0 / Stacks;
 
   // Normal vector of the current vert
-  const n = vec3.create();
+  const normal = vec3.create();
 
   for (let s = 0; s < Slices; s++) {
     for (let t = 0; t < Stacks; t++) {
       // Position of the current vert
-      const p = evalTrefoil(s*ds, t*dt);
+      const position = evalTrefoil(s*ds, t*dt);
+
+      // Calculate normal vector
+      // TODO as this is a well understood shape mathematically,
+      // could we calculate this analytically instead of running
+      // these extra calls every fram for an approximation
+      //
       // Positions slightly offset in x and y dirs
       const u = evalTrefoil(s*ds + E, t*dt);
       const v = evalTrefoil(s*ds, t*dt + E);
-      // Just the difference from the position
-      vec3.sub(u, u, p);
-      vec3.sub(v, v, p);
+      // Calculate the differences from the position
+      vec3.sub(u, u, position);
+      vec3.sub(v, v, position);
       // Cross and normalize to get normal vector
-      vec3.cross(n, u, v);
-      vec3.normalize(n, n);
+      vec3.cross(normal, u, v);
+      vec3.normalize(normal, normal);
 
       // (s*Stacks + t) is the current vertex
       // 6 is amount of floats per vert (3 pos + 3 norm)
-      verts.set([...p, ...n], (s*Stacks + t)*6);
+      verts.set([...position, ...normal], (s*Stacks + t)*6);
     }
   }
 
@@ -164,10 +177,16 @@ function buildIndexBuffer() {
 
   for (let i = 0; i < Slices * Stacks; i += Stacks) {
     for (let j = 0; j < Stacks; j++) {
+      // First triangle of this pair
+      // You can think of the indicices pushed here as
+      // (i,j), (i,j+1), (i+1,j) respectively
       indices[currIx++] = i + j;
       indices[currIx++] = i + ((j + 1) % Stacks);
       indices[currIx++] = (i + j + Stacks) % VertexCount;
 
+      // Second triangle of this pair
+      // You can think of the indicices pushed here as
+      // (i+1,j), (i,j+1), (i+1,j+1) respectively
       indices[currIx++] = (i + j + Stacks) % VertexCount;
       indices[currIx++] = i + ((j + 1) % Stacks);
       indices[currIx++] = (i + ((j + 1) % Stacks) + Stacks) % VertexCount;
