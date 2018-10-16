@@ -69,8 +69,8 @@ function update() {
   mat4.multiply(modelView, translation, rotation);
   mat3.fromMat4(normalMatrix, modelView);
 
-  const S = 0.80;
-  const H = S * aspectRatio;
+  const S = 2.0;
+  const H = S / aspectRatio;
   mat4.ortho(projection, -S, S, -H, H, 4, 10);
 
   draw();
