@@ -124,7 +124,7 @@ const evalTrefoil = (() => {
   const dv = vec3.create();
   const q = vec3.create();
   const qvn = vec3.create();
-  const ww = vec3.create();
+  const iww = vec3.create();
 
   return (s, t) => {
     const a = 0.5;
@@ -146,13 +146,13 @@ const evalTrefoil = (() => {
     // qvn is the vector normal of q
     vec3.set(qvn, q[1], -q[0], 0);
     vec3.normalize(qvn, qvn);
-    vec3.cross(ww, q, qvn);
+    vec3.cross(iww, q, qvn);
 
     const range = vec3.create();
 
-    range[0] = x + d * (qvn[0] * Math.cos(v) + ww[0] * Math.sin(v));
-    range[1] = y + d * (qvn[1] * Math.cos(v) + ww[1] * Math.sin(v));
-    range[2] = z + d * ww[2] * Math.sin(v);
+    range[0] = x + d * (qvn[0] * Math.cos(v) + iww[0] * Math.sin(v));
+    range[1] = y + d * (qvn[1] * Math.cos(v) + iww[1] * Math.sin(v));
+    range[2] = z + d * iww[2] * Math.sin(v);
     return range;
   }
 })();
