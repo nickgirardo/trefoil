@@ -4,8 +4,17 @@
   </head>
   <body>
 
-    <div id="canvas-container">
-      <canvas></canvas>
+    <div id="webgl-support">
+      <div id="canvas-container">
+        <canvas></canvas>
+      </div>
+    </div>
+
+    <div id="no-webgl-support">
+      <h1>WebGL 2 not supported</h1>
+      <p>Your browser does not support WebGL 2</p>
+      <p>WebGL is a JavaScript API for interactive graphics maintained by the Khronos Group.  If your browser can not run it, you may want to update your browser or switch to a different browser (I recommend <a href="https://www.mozilla.org/en-US/firefox/new/">Mozilla Firefox</a>).
+      <p>You can learn more about WebAssembly <a href="https://en.wikipedia.org/wiki/WebGL">on Wikipedia</a> or on the <a href="https://khronos.org/webgl">official WebGL website</a>.</p>
     </div>
 
     <script src='bundle.js'></script>

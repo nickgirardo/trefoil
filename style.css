@@ -15,3 +15,9 @@ html, body {
     align-items: center;
     justify-content: center;
 }
+
+#no-webgl-support {
+    display: none;
+    max-width: 80ch;
+    padding: 1em;
+}

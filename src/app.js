@@ -226,13 +226,6 @@ function initGL() {
 }
 
 function init() {
-  const isWebGL2 = !!gl;
-  if(!isWebGL2) {
-    document.querySelector('body').style.backgroundColor = 'red';
-    console.error("Unable to create webgl2 context");
-    return;
-  }
-
   initGL();
 
   Util.resize(gl, canvas);
@@ -241,4 +234,13 @@ function init() {
   update();
 }
 
-init();
+// Only run the application if webgl2 is supported
+// Otherwise display informative message
+const isWebGL2 = !!gl;
+if(isWebGL2) {
+  init();
+} else {
+  document.querySelector('#webgl-support').style.display = 'none';
+  document.querySelector('#no-webgl-support').style.display = 'block';
+}
+
