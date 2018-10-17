@@ -21,3 +21,18 @@ html, body {
     max-width: 80ch;
     padding: 1em;
 }
+
+#source-link {
+    position: fixed;
+    bottom: 0;
+    right: 0.5em;
+
+    text-size: small;
+}
+
+#source-link > a:link {
+    color: grey;
+}
+#source-link > a:visited {
+    color: grey;
+}
