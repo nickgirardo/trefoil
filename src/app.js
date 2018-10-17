@@ -7,8 +7,6 @@ import * as vertSrc from "../assets/shaders/basic.vert";
 const canvas = document.querySelector('canvas');
 const gl = canvas.getContext('webgl2', { antialias: false });
 
-const aspectRatio = 16/9;
-
 const Slices = 256;
 const Stacks = 64;
 const VertexCount = Slices * Stacks;
@@ -26,7 +24,7 @@ let modelView = mat4.create();
 let normalMatrix = mat3.create();
 
 function draw() {
-  gl.clearColor(0.7, 0.7, 0.7, 1.0); // Clear background with light grey color
+  gl.clearColor(0.9, 0.9, 0.9, 1.0); // Clear background with light grey color
   gl.clearDepth(1.0); // Clear the depth buffer
 
   // Clear canvas
@@ -76,7 +74,8 @@ function update() {
 
   // The two vars are actual only half width and height
   // Aspect ratio used to insure correct proportions
-  const viewWidth = 2.0;
+  const aspectRatio = canvas.width / canvas.height;
+  const viewWidth = 2.4;
   const viewHeight = viewWidth / aspectRatio;
   mat4.ortho(projection, -viewWidth, viewWidth, -viewHeight, viewHeight, 4, 10);
 
@@ -236,8 +235,8 @@ function init() {
 
   initGL();
 
-  Util.resize(gl, canvas, aspectRatio);
-  window.addEventListener("resize", e=>Util.resize(gl, canvas, aspectRatio));
+  Util.resize(gl, canvas);
+  window.addEventListener("resize", e=>Util.resize(gl, canvas));
 
   update();
 }

@@ -110,21 +110,8 @@ export function getLocations(gl, program, uniformNames, attribNames) {
  * Handler for window resize
  */
 export function resize(gl, canvas, aspectRatio) {
-  // Among other things, this method makes sure the game is always 16/9
-  const scaleFactor = 0.9;
-
-  let wWidth = window.innerWidth;
-  let wHeight = window.innerHeight;
-
-  let windowAspectRatio = wWidth/ wHeight;
-
-  if(windowAspectRatio > aspectRatio) {
-    canvas.width = wHeight * aspectRatio * scaleFactor;
-    canvas.height = wHeight * scaleFactor;
-  } else {
-    canvas.width = wWidth * scaleFactor;
-    canvas.height = wWidth / aspectRatio * scaleFactor;
-  };
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   gl.viewport(0, 0, canvas.width, canvas.height);
 }
