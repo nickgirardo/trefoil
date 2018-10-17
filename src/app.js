@@ -34,9 +34,9 @@ function draw() {
 
   gl.useProgram(programInfo.program);
 
-  gl.uniform3f(programInfo.locations.uniform.diffuseMaterial, 0, 0.75, 0.75);
+  gl.uniform3f(programInfo.locations.uniform.diffuseMaterial, 0.7, 0.2, 0.8);
   gl.uniform3f(programInfo.locations.uniform.ambientMaterial, 0.04, 0.04, 0.04);
-  gl.uniform3f(programInfo.locations.uniform.specularMaterial, 0.5, 0.5, 0.5);
+  gl.uniform3f(programInfo.locations.uniform.specularMaterial, 0.5, 0.6, 0.5);
   gl.uniform1f(programInfo.locations.uniform.shininess, 80);
 
   gl.uniform3f(programInfo.locations.uniform.lightPosition, 0.25, 0.25, 1);
