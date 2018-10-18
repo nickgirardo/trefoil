@@ -5,7 +5,7 @@ import * as fragSrc from "../assets/shaders/toon.frag";
 import * as vertSrc from "../assets/shaders/basic.vert";
 
 const canvas = document.querySelector('canvas');
-const gl = canvas.getContext('webgl2', { antialias: false });
+const gl = canvas.getContext('webgl2', { antialias: true });
 
 const Slices = 256;
 const Stacks = 64;
