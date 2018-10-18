@@ -146,12 +146,12 @@ const evalTrefoil = (() => {
     const u = (1 - s) * 2 * Math.PI*2;
     const v = t * Math.PI*2;
     const r = a + b * Math.cos(1.5 * u);
-    const x = r * Math.cos(u);
-    const y = r * Math.sin(u);
+    const x = Math.cos(u);
+    const y = Math.sin(u);
     const z = c * Math.sin(1.5 * u);
 
-    dv[0] = -1.5 * b * Math.sin(1.5 * u) * Math.cos(u) - (a + b * Math.cos(1.5 * u)) * Math.sin(u);
-    dv[1] = -1.5 * b * Math.sin(1.5 * u) * Math.sin(u) + (a + b * Math.cos(1.5 * u)) * Math.cos(u);
+    dv[0] = -1.5 * b * Math.sin(1.5 * u) * x - y;
+    dv[1] = -1.5 * b * Math.sin(1.5 * u) * y + x;
     dv[2] = 1.5 * c * Math.cos(1.5 * u);
 
     vec3.normalize(q, dv);
@@ -162,8 +162,8 @@ const evalTrefoil = (() => {
 
     const range = vec3.create();
 
-    range[0] = x + d * (qvn[0] * Math.cos(v) + iww[0] * Math.sin(v));
-    range[1] = y + d * (qvn[1] * Math.cos(v) + iww[1] * Math.sin(v));
+    range[0] = (x * r) + d * (qvn[0] * Math.cos(v) + iww[0] * Math.sin(v));
+    range[1] = (y * r) + d * (qvn[1] * Math.cos(v) + iww[1] * Math.sin(v));
     range[2] = z + d * iww[2] * Math.sin(v);
     return range;
   }
