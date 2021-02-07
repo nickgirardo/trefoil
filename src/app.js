@@ -1,6 +1,11 @@
 import * as Util from "./engine/util.js";
 import { vec3, vec4, mat3, mat4 } from "./engine/gl-matrix.js";
 
+// Importing the styles
+// The build will extract these and inject them into the html output
+import * as styles from "../assets/styles/style.css";
+
+// Shaders
 import * as fragSrc from "../assets/shaders/toon.frag";
 import * as vertSrc from "../assets/shaders/basic.vert";
 

@@ -4,8 +4,8 @@
   "description": "WebGL recreation of aa cel-shaded trefoil demo",
   "main": "webpack.config.js",
   "scripts": {
-    "start:dev": "webpack serve",
-    "publish": "webpack",
+    "start:dev": "webpack serve --config webpack.dev.js",
+    "publish": "webpack --config webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +19,11 @@
   },
   "homepage": "https://github.com/nickgirardo/trefoil#readme",
   "devDependencies": {
+    "css-loader": "^5.0.1",
+    "css-minimizer-webpack-plugin": "^1.2.0",
+    "html-inline-css-webpack-plugin": "^1.10.1",
+    "html-webpack-plugin": "^5.0.0",
+    "mini-css-extract-plugin": "^1.3.5",
     "raw-loader": "^0.5.1",
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0",
