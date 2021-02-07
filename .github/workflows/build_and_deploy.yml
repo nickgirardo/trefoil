@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build_latex:
+  build_bundle:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,8 +18,6 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-        # Moving the pdf to its own build directory to help ensure we don't upload
-        # build artifacts to s3 later
       - name: Publish Bundle
         run: npm run publish
       - name: Sync Bundle
